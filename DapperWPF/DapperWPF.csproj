@@ -70,7 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database.cs" />
+    <Compile Include="DatabaseFirebird.cs" />
+    <Compile Include="DatabaseLiteDB.cs" />
     <Compile Include="DatabaseSQLite.cs" />
     <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\Post.cs" />
