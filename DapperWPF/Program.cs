@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DapperWPF.Models;
+using LiteDB;
 
 namespace DapperWPF
 {
@@ -38,14 +39,15 @@ namespace DapperWPF
             //    Console.WriteLine($"User: {item.Firstname} {item.LastName}");
             //}
 
-            // SQLITE
-            var db = new DatabaseSQLite();
-            var userRepo = db.UserRepository;
+            // SQLITE http://blog.maskalik.com/asp-net/sqlite-simple-database-with-dapper/
 
-            foreach (var item in _usersMoq)
-            {
-                userRepo.SaveUser(item);
-            }
+            //var db = new DatabaseSQLite();
+            //var userRepo = db.UserRepository;
+
+            //foreach (var item in _usersMoq)
+            //{
+            //    userRepo.SaveUser(item);
+            //}
             //var insertUser = new User
             //{
             //    Firstname = "Jan",
@@ -58,8 +60,40 @@ namespace DapperWPF
 
             //Console.WriteLine($"User: {u.Firstname} {u.LastName}");
 
-            var users = userRepo.GetUsers();
-            foreach (var item in users)
+            //var users = userRepo.GetUsers();
+            //foreach (var item in users)
+            //{
+            //    Console.WriteLine($"User: {item.Firstname} {item.LastName}");
+            //}
+
+            // LiteDB http://www.litedb.org/
+
+            var usersLiteDb = new List<Users2>
+            {
+                new Users2 { Id = Guid.NewGuid(), Firstname = "Jakub", LastName = "Marcickiewicz", Role = "Admin" },
+                new Users2 { Id = Guid.NewGuid(), Firstname = "Andrzej", LastName = "Bufon", Role = "user" },
+            };
+            
+            var lite = new LiteDatabase("liteDb.db");
+            var users = lite.GetCollection<Users2>("users");
+
+            Console.WriteLine("--");
+            foreach (var item in usersLiteDb)
+            {
+                users.Insert(item);
+            }
+            Console.WriteLine("--");
+            foreach (var item in users.FindAll())
+            {
+                Console.WriteLine($"User: {item.Firstname} {item.LastName}");
+            }
+
+            var user = users.FindOne(x => x.Firstname == "Jakub");
+            user.Firstname = "Kuba";
+            users.Update(user);
+
+            Console.WriteLine("--");
+            foreach (var item in users.FindAll())
             {
                 Console.WriteLine($"User: {item.Firstname} {item.LastName}");
             }
